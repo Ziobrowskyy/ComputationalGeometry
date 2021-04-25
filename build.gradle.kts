@@ -16,7 +16,8 @@ repositories {
 dependencies {
 	testImplementation(kotlin("test-junit"))
 	implementation("no.tornado:tornadofx:1.7.20")
-	
+	implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2")
+	implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:1.4.2")
 }
 
 javafx {
