@@ -1,0 +1,55 @@
+package shapes
+
+import canvasHeight
+import canvasWidth
+import java.util.*
+import kotlin.math.acos
+import kotlin.math.pow
+import kotlin.math.sqrt
+import kotlin.random.Random
+
+typealias Vector = Point
+
+data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 10.0) {
+   constructor(x: Int, y: Int, radius: Double = 5.0) : this(x.toDouble(), y.toDouble(), radius)
+
+   companion object {
+      fun angle(p: Point, q: Point, r: Point): Double {
+         val a = p.vectorTo(q)
+         val b = p.vectorTo(r)
+         val alfa = acos((a dot b) / (a.len * b.len))
+         return if (det(p, q, r) < 0) 2 * Math.PI - alfa else alfa
+      }
+
+      fun det(p: Point, q: Point, r: Point): Double {
+         return p.x * q.y + p.y * r.x + q.x * r.y - (r.x * q.y + r.y * p.x + q.x * p.y)
+      }
+
+      fun randomFromCanvasSize() = Point(
+         Random.nextDouble(-canvasWidth / 2, canvasWidth / 2),
+         Random.nextDouble(-canvasHeight / 2, canvasHeight / 2),
+      )
+   }
+
+   override fun toString(): String {
+      return String.format(Locale.ENGLISH, "Point(x=%.2f, y=%.2f)", x, y)
+   }
+
+   val len: Double
+      get() = sqrt(x.pow(2) + y.pow(2))
+
+   fun add(x: Double = 0.0, y: Double = 0.0) = Point(this.x + x, this.y + y)
+
+   infix operator fun plus(other: Point) = Point(this.x + other.x, this.y + other.y)
+
+   infix operator fun minus(other: Point) = Point(this.x - other.x, this.y - other.y)
+
+   infix fun dot(other: Point) = this.x * other.x + this.y * other.y
+
+   infix fun cross(other: Point) = this.x * other.y - this.y * other.x
+
+   fun distTo(other: Point) = sqrt((this.x - other.x).pow(2) + (this.y - other.y).pow(2))
+
+   fun vectorTo(other: Point) = Vector(other.x - this.x, other.y - this.y)
+}
+
