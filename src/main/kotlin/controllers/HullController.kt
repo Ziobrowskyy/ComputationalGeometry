@@ -5,7 +5,7 @@ import shapes.Point
 import shapes.Polygon
 import shapes.Shape
 
-class HullController: MainController() {
+class HullController: CanvasController() {
 	var hullState: Boolean = false
 	
 	init {
@@ -23,9 +23,6 @@ class HullController: MainController() {
 		updateHull()
 	}
 	
-	override fun updateShape(s: Shape, oldPoint: Point, newPoint: Point) {
-	
-	}
 	private fun updateHull() {
 		lines.clear()
 		if (hullState && points.size >= 2) {

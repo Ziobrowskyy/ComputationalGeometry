@@ -2,6 +2,8 @@ import stylesheets.Styles
 import tornadofx.*
 import views.HullView
 import views.LineAndPointView
+import views.PolygonView
+import views.TwoLinesView
 
 const val canvasWidth: Double = 800.0
 const val canvasHeight: Double = 600.0
@@ -22,12 +24,12 @@ class MainView : View() {
 		button("Open point and lines canvas") {
 			action { find<LineAndPointView>().openWindow() }
 		}
-//		button("Open lines canvas") {
-//			action {find<TwoLinesView>().openWindow()}
-//		}
-//		button("Open polygon canvas") {
-//			action { find<PolygonView>().openWindow() }
-//		}
+		button("Open lines canvas") {
+			action {find<TwoLinesView>().openWindow()}
+		}
+		button("Open polygon canvas") {
+			action { find<PolygonView>().openWindow() }
+		}
 	}
 }
 

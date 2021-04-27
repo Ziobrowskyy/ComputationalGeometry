@@ -1,31 +1,27 @@
 package controllers
 
-import calc.Hull
 import canvasHeight
 import canvasWidth
-import javafx.collections.ListChangeListener
 import javafx.scene.input.MouseEvent
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import shapes.*
 import tornadofx.Controller
 import tornadofx.observableListOf
-import tornadofx.runLater
 import kotlin.math.abs
 
-enum class InputMode {
-	INSERT,
-	MOVE
-}
 
-abstract class MainController : Controller() {
+abstract class CanvasController : Controller() {
+	
+	enum class InputMode {
+		INSERT,
+		MOVE
+	}
+	
 	val points = observableListOf<Point>()
 	val lines = observableListOf<Line>()
-	val shapes = observableListOf<Shape>()
+	protected  val shapes = observableListOf<Shape>()
 	
 	var mode: InputMode = InputMode.INSERT
+	protected var disablePointRemove = false
 	
 	object Selection {
 		var selectedPoint: Point? = null
@@ -33,7 +29,13 @@ abstract class MainController : Controller() {
 	}
 	
 	abstract fun update()
-	abstract fun updateShape(s: Shape, oldPoint: Point, newPoint: Point)
+	open fun updateShape(s: Shape, oldPoint: Point, newPoint: Point) {
+		points.removeIf { s.points.contains(it) }
+		shapes.remove(s)
+		Selection.selectedShape = s.replacePoint(oldPoint, newPoint)
+		shapes.add(Selection.selectedShape)
+		points.addAll(Selection.selectedShape!!.points)
+	}
 	
 	fun mousePressed(evt: MouseEvent) {
 		when (mode) {
@@ -124,7 +126,7 @@ abstract class MainController : Controller() {
 		Selection.selectedPoint?.also {
 			val oldPoint = it
 			val newPoint = it.copy(x = mousePos.x, y = mousePos.y)
-			if(Selection.selectedShape == null) {
+			if (Selection.selectedShape == null) {
 				points.remove(it)
 				points.add(newPoint)
 			}
@@ -154,8 +156,10 @@ abstract class MainController : Controller() {
 	}
 	
 	private fun handleRemovePoint(evt: MouseEvent) {
-		val mousePoint = getMousePos(evt)
-		points.removeIf { it.distTo(mousePoint) <= it.radius }
+		if (!disablePointRemove) {
+			val mousePoint = getMousePos(evt)
+			points.removeIf { it.distTo(mousePoint) <= it.radius }
+		}
 	}
 	
 	

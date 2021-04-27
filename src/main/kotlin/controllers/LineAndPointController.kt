@@ -9,7 +9,7 @@ import shapes.Polygon
 import shapes.Shape
 import java.util.*
 
-class LineAndPointController : MainController() {
+class LineAndPointController : CanvasController() {
 	/*
 i. Obrót półprostej względem punktu,
 ii. Obliczenie punktu przecięcia dwóch linii,
@@ -25,7 +25,8 @@ iv. Określenie położenia punktu względem linii,
 	var point: Point? = null
 	
 	init {
-		changeSelectMode()
+		mode = InputMode.MOVE
+		
 		point = Point.randomFromCanvasSize()
 		points.add(point)
 		val l = Line(

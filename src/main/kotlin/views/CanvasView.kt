@@ -1,17 +1,14 @@
 package views
 
-import controllers.MainController
 import canvasHeight
 import canvasWidth
+import controllers.CanvasController
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
-import shapes.Line
-import shapes.Polygon
 import tornadofx.*
-import kotlin.random.Random
 
 class CanvasView : View() {
-	val ctrl: MainController by param()
+	val ctrl: CanvasController by param()
 	
 	private fun onMouseClicked(evt: MouseEvent) {
 		ctrl.mousePressed(evt)

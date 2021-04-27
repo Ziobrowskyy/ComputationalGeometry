@@ -1,16 +1,11 @@
 package views
 
-import canvasHeight
 import controllers.HullController
-import controllers.MainController
 import javafx.beans.property.SimpleStringProperty
-import javafx.scene.input.KeyCombination
 import stylesheets.Styles
 import tornadofx.*
-import java.awt.Color
 
 class HullControlsView: View() {
-//	val ctrl = find<HullController>()
 	val ctrl: HullController by param()
 	
 	private val modeString = SimpleStringProperty(ctrl.mode.name)
