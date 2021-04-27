@@ -5,12 +5,13 @@ import canvasHeight
 import canvasWidth
 import javafx.scene.input.MouseEvent
 import javafx.scene.paint.Color
+import shapes.Line
 import shapes.Polygon
 import tornadofx.*
 import kotlin.random.Random
 
 class CanvasView : View() {
-	private val ctrl = find<MainController>()
+	val ctrl: MainController by param()
 	
 	private fun onMouseClicked(evt: MouseEvent) {
 		ctrl.mousePressed(evt)
@@ -90,7 +91,6 @@ class CanvasView : View() {
 					}
 				}
 			}
-				
 				// draw shapes, currently unused
 //				bindChildren(ctrl.shapes) {
 //					when (it) {

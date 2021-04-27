@@ -5,7 +5,7 @@ import shapes.Point
 object Hull {
 	fun graham(l: List<Point>): List<Point> {
 		val list = l.toList()
-		assert(list.size >= 3)
+		assert(list.size >= 2)
 		val (min, rest) = with(list.sortedWith { p1: Point, p2: Point ->
 			if (p1.y == p2.y)
 				p1.x.compareTo(p2.x)

@@ -20,40 +20,20 @@ enum class InputMode {
 	MOVE
 }
 
-class MainController : Controller() {
+abstract class MainController : Controller() {
 	val points = observableListOf<Point>()
 	val lines = observableListOf<Line>()
 	val shapes = observableListOf<Shape>()
 	
 	var mode: InputMode = InputMode.INSERT
-	var hullState: Boolean = false
 	
 	object Selection {
 		var selectedPoint: Point? = null
+		var selectedShape: Shape? = null
 	}
 	
-	init {
-		points.add(Point(-100, -100))
-		points.add(Point(-100, 100))
-		points.add(Point(100, -100))
-		points.add(Point(100, 100))
-//		for (i in 0 until 10) {
-//			points.add(Point.randomFromCanvasSize())
-//		}
-	}
-	
-	init {
-		lines.addListener(ListChangeListener {
-			println("Lines upated")
-		})
-	}
-	
-	fun reload() {
-//		points.clear()
-//		lines.clear()
-//		shapes.clear()
-//		Selection.selectedPoint = null
-	}
+	abstract fun update()
+	abstract fun updateShape(s: Shape, oldPoint: Point, newPoint: Point)
 	
 	fun mousePressed(evt: MouseEvent) {
 		when (mode) {
@@ -64,7 +44,10 @@ class MainController : Controller() {
 					handleRemovePoint(evt)
 			}
 			InputMode.MOVE -> {
-				handleSelectPoint(evt)
+				if (evt.isPrimaryButtonDown)
+					handleSelectPoint(evt)
+				if (evt.isSecondaryButtonDown)
+					handleRemovePoint(evt)
 			}
 		}
 		update()
@@ -96,37 +79,6 @@ class MainController : Controller() {
 		}
 	}
 	
-	fun changeHullMode() {
-		hullState = !hullState
-		updateHull()
-	}
-	
-	fun updateHull() {
-//		if (false) {
-//
-//			shapes.clear()
-//			if (hullState && points.size >= 3) {
-//				val hullPoints = Hull.graham(points)
-//				val hullPoly = Polygon(hullPoints)
-//				shapes.add(hullPoly)
-//			}
-//		} else {
-		lines.clear()
-		if (hullState && points.size >= 3) {
-			val hullPoints = Hull.graham(points)
-			val hullLines = Polygon(hullPoints).lines
-			lines.addAll(hullLines)
-			println("Lines size: " + lines.size)
-			println("Points size: " + points.size)
-		}
-//		}
-		
-	}
-	
-	private fun update() {
-		updateHull()
-	}
-	
 	fun clearAll() {
 		clearLines()
 		clearPoints()
@@ -143,33 +95,60 @@ class MainController : Controller() {
 	private fun handleSelectPoint(evt: MouseEvent) {
 		val mousePos = getMousePos(evt)
 		Selection.selectedPoint = points.firstOrNull { it.distTo(mousePos) <= it.radius }
+		Selection.selectedPoint?.parent?.also {
+			Selection.selectedShape = it
+		}
 	}
 	
 	private fun handleMovePoint(evt: MouseEvent) {
 		val mousePos = getMousePos(evt)
-		Selection.selectedPoint?.also {
-			points.remove(it)
-			val newPoint = mousePos.copy(radius = it.radius)
-			points.add(newPoint)
-			Selection.selectedPoint = newPoint
+		/*
+		Selection.selectedShape?.also { selectedShape ->
+			Selection.selectedPoint?.also {
+				val oldPoint = it
+				val newPoint = it.copy(x = mousePos.x, y = mousePos.y)
+				points.remove(it)
+
+				shapes.remove(selectedShape)
+				val replaced = selectedShape.replacePoint(oldPoint, newPoint)
+				shapes.add(replaced)
+				Selection.selectedPoint = replaced.points.find { it.x == newPoint.x && it.y == newPoint.y }
+				Selection.selectedShape = replaced
+			}
+
+			return
 		}
+
+		 */
 		
+		Selection.selectedPoint?.also {
+			val oldPoint = it
+			val newPoint = it.copy(x = mousePos.x, y = mousePos.y)
+			if(Selection.selectedShape == null) {
+				points.remove(it)
+				points.add(newPoint)
+			}
+			Selection.selectedPoint = newPoint
+			//check if point has parent shape and if so update it
+			Selection.selectedShape?.also {
+				updateShape(it, oldPoint, newPoint)
+			}
+		}
 	}
 	
 	private fun handleMovePointEnd(evt: MouseEvent) {
 		Selection.selectedPoint?.also {
 			if (abs(it.x) >= canvasWidth / 2 || abs(it.y) >= canvasHeight / 2) {
-				
-				points.remove(it)
+				if (it.parent == null)
+					points.remove(it)
 			}
 		}
 		Selection.selectedPoint = null
+		Selection.selectedShape = null
 	}
 	
 	private fun handleAddPoint(evt: MouseEvent) {
 		val mousePos = getMousePos(evt)
-		println(mousePos)
-		println(points.size)
 		//create circle correspondign  to this point, so that it can render
 		points.add(mousePos.copy(radius = 10.0))
 	}

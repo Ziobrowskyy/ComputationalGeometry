@@ -3,14 +3,12 @@ package shapes
 import canvasHeight
 import canvasWidth
 import java.util.*
-import kotlin.math.acos
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 import kotlin.random.Random
 
 typealias Vector = Point
 
-data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 10.0) {
+data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 10.0, val parent: Shape? = null) {
 	constructor(x: Int, y: Int) : this(x.toDouble(), y.toDouble())
 	
 	
@@ -45,6 +43,8 @@ data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 
 	
 	infix operator fun minus(other: Point) = Point(this.x - other.x, this.y - other.y)
 	
+	override infix operator fun equals(other: Any?) = (other is Point) && this.x == other.x && this.y == other.y
+	
 	infix fun dot(other: Point) = this.x * other.x + this.y * other.y
 	
 	infix fun cross(other: Point) = this.x * other.y - this.y * other.x
@@ -52,5 +52,13 @@ data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 
 	fun distTo(other: Point) = sqrt((this.x - other.x).pow(2) + (this.y - other.y).pow(2))
 	
 	fun vectorTo(other: Point) = Vector(other.x - this.x, other.y - this.y)
+	
+	fun rotate(angle: Double, other: Point = Point()): Point {
+		return this.copy(
+			x = (x - other.x) * cos(angle) - (y - other.y) * sin(angle) + other.x,
+			y = (x - other.x) * sin(angle) + (y - other.y) * cos(angle) + other.y
+		)
+	}
 }
+
 

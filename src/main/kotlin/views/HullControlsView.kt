@@ -1,16 +1,28 @@
 package views
 
 import canvasHeight
+import controllers.HullController
 import controllers.MainController
 import javafx.beans.property.SimpleStringProperty
+import javafx.scene.input.KeyCombination
 import stylesheets.Styles
 import tornadofx.*
 import java.awt.Color
 
-class HullControlsView : View() {
-	val ctrl = find<MainController>()
-	val modeString = SimpleStringProperty(ctrl.mode.name)
-	val hullStateString = SimpleStringProperty(ctrl.hullState.toString())
+class HullControlsView: View() {
+//	val ctrl = find<HullController>()
+	val ctrl: HullController by param()
+	
+	private val modeString = SimpleStringProperty(ctrl.mode.name)
+	private val hullStateString = SimpleStringProperty(ctrl.hullState.toString())
+	fun toggleInsetMode() {
+		ctrl.changeSelectMode()
+		modeString.value = ctrl.mode.name
+	}
+	fun toggleHull() {
+		ctrl.changeHullMode()
+		hullStateString.value = ctrl.hullState.toString()
+	}
 	
 	override val root = vbox {
 		spacing = 5.0
@@ -18,11 +30,15 @@ class HullControlsView : View() {
 		label("Current mode:")
 		label(modeString)
 		
-		button("Changle select mode") {
-			action {
-				ctrl.changeSelectMode()
-				modeString.value = ctrl.mode.name
-			}
+		shortcut("T") {
+			toggleInsetMode()
+		}
+		shortcut("H") {
+			toggleHull()
+		}
+		
+		button("Changle select mode [T]") {
+			action { toggleInsetMode() }
 		}
 		button("Clear all points") {
 			action { ctrl.clearPoints() }
@@ -37,17 +53,10 @@ class HullControlsView : View() {
 		}
 		label("Hull status")
 		label(hullStateString)
-		button("Toggle hull") {
-			action {
-				ctrl.changeHullMode()
-				hullStateString.value = ctrl.hullState.toString()
-			}
+		button("Toggle hull [H]") {
+			action {toggleHull()}
 		}
-		button("Update hull") {
-			action { ctrl.updateHull() }
-		}
-		
-		button("Back to menu") {
+		button("Back to menu (not working yet)") {
 		
 		}
 	}
