@@ -2,6 +2,8 @@ package controllers
 
 import canvasHeight
 import canvasWidth
+import javafx.beans.property.SimpleStringProperty
+import javafx.geometry.Dimension2D
 import javafx.scene.input.MouseEvent
 import shapes.*
 import tornadofx.Controller
@@ -10,17 +12,16 @@ import kotlin.math.abs
 
 
 abstract class CanvasController : Controller() {
-
     enum class InputMode {
         INSERT,
         MOVE
     }
-
+    var backgroundSrc: SimpleStringProperty = SimpleStringProperty("")
     val points = observableListOf<Point>()
     val lines = observableListOf<Line>()
     protected val shapes = observableListOf<Shape>()
 
-    var mode: InputMode = InputMode.INSERT
+    var pointMode: InputMode = InputMode.INSERT
     protected var disablePointRemove = false
 
     object Selection {
@@ -43,7 +44,7 @@ abstract class CanvasController : Controller() {
     }
 
     fun mousePressed(evt: MouseEvent) {
-        when (mode) {
+        when (pointMode) {
             InputMode.INSERT -> {
                 if (evt.isPrimaryButtonDown)
                     handleAddPoint(evt)
@@ -61,7 +62,7 @@ abstract class CanvasController : Controller() {
     }
 
     fun mouseMoved(evt: MouseEvent) {
-        when (mode) {
+        when (pointMode) {
             InputMode.MOVE -> {
                 handleMovePoint(evt)
             }
@@ -73,7 +74,7 @@ abstract class CanvasController : Controller() {
     }
 
     fun mouseReleased(evt: MouseEvent) {
-        when (mode) {
+        when (pointMode) {
             InputMode.MOVE -> {
                 handleMovePointEnd(evt)
             }
@@ -85,7 +86,7 @@ abstract class CanvasController : Controller() {
     }
 
     fun changeSelectMode() {
-        mode = if (mode == InputMode.INSERT) {
+        pointMode = if (pointMode == InputMode.INSERT) {
             InputMode.MOVE
         } else {
             InputMode.INSERT

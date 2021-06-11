@@ -31,6 +31,8 @@ data class Point(val x: Double = 0.0, val y: Double = 0.0, val radius: Double = 
         )
 
         fun canvasTopLeft() = Point(-canvasWidth / 2, -canvasHeight / 2)
+
+        val zero = Point(0,0)
     }
 
     override fun toString(): String {
